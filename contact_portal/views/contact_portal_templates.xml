@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_home_menu_contact" name="Portal layout : Contact"
+        inherit_id="portal.portal_breadcrumbs">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'contact' or contact" class="col-lg-2"
+                t-attf-class="breadcrumb-item #{'active ' if not contact else ''}">
+                <a t-attf-href="/my/contacts?{{ keep_query() }}">Contacts</a>
+            </li>
+            <li t-if="contact" class="breadcrumb-item active">
+                <span t-field="contact.name" />
+            </li>
+        </xpath>
+    </template>
+    <template id="portal_my_home_contact" name="Company Contact"
+        inherit_id="portal.portal_my_home">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <div class="o_portal_category row g-2 mt-3">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="title">Contacts</t>
+                    <t t-set="icon" t-value="'/contact_portal/static/src/img/icon.svg'" />
+                    <t t-set="url" t-value="'/my/contacts'" />
+                    <t t-set="text">Message a colleague</t>
+                    <t t-set="placeholder_count" t-value="'contact_count'" />
+                </t>
+            </div>
+        </xpath>
+    </template>
+    <template id="portal_my_contacts" name="My Contacts">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True" />
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Contacts</t>
+            </t>
+            <t t-if="contacts" t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <t t-foreach="contacts" t-as="contact">
+                    <tr>
+                        <td>
+                            <a t-attf-href="/my/contacts/#{contact.id}?{{ keep_query() }}">
+                                <img
+                                    class="rounded-circle o_portal_contact_img"
+                                    t-attf-src="#{image_data_uri(contact.sudo().avatar_128)}"
+                                    alt="Contact" style="width: 20px; height: 20px;" />
+                                <span t-field="contact.name" />
+                            </a>
+                        </td>
+                        <td class="text-end">
+                            <button type="button" class="btn">
+                                <a
+                                    t-attf-href="/my/contacts/#{contact.id}#contact_communication?{{ keep_query() }}">
+                                    Send Message
+                                </a>
+                            </button>
+                        </td>
+                    </tr>
+
+                </t>
+            </t>
+            <p t-else="">There are currently no contacts for your company.</p>
+        </t>
+    </template>
+    <template id="contact_portal_content" name="contact_portal_content">
+
+        <div id="introduction"
+            t-attf-class="pb-2 pt-3 #{'card-header bg-white' if report_type == 'html' else ''}">
+            <h2 class="d-flex mb-3 mb-md-0 row">
+                <div class="col-9">
+                    <t t-out="contact.name" />
+                </div>
+            </h2>
+        </div>
+        <div id="informations" class="mt-3">
+            <div class="row" id="email">
+                <div class="mb-3 col-6">
+                    <strong>Email:</strong>
+                    <span t-field="contact.email" />
+                </div>
+            </div>
+            <div class="row" id="phone">
+                <div class="mb-3 col-6">
+                    <strong>Phone:</strong>
+                    <span t-field="contact.phone" />
+                </div>
+            </div>
+        </div>
+    </template>
+    <template id="contact_portal_template" name="Contact"
+        inherit_id="portal.portal_sidebar" primary="True">
+        <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
+            <div class="row mt16 o_portal_sale_sidebar">
+                <div t-attf-class="card #{'pb-5' if report_type == 'html' else ''}"
+                    id="portal_contact_content">
+                    <div t-call="contact_portal.contact_portal_content" />
+                </div>
+            </div>
+            <div id="contact_communication">
+                <h3>Chatter</h3>
+                <t t-call="portal.message_thread" />
+            </div>
+        </xpath>
+    </template>
+
+</odoo>
