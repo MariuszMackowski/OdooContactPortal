@@ -1,3 +1,7 @@
+1.2.0
+======
+* Added child contacts to domain.
+
 1.1.0
 ======
 * Added self id filtering to internal user domain.

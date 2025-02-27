@@ -36,7 +36,7 @@ class CustomerPortal(portal.CustomerPortal):
         Returns:
             list: A list representing the domain expression used for filtering contacts:
                 - For portal users: Filters contacts by company (parent company) and excludes self.
-                - For internal users: Allows all contacts to be viewed.
+                - For internal users: Allows all contacts to be viewed and excludes self.
         """
         user = request.env.user
         domain = [
@@ -55,9 +55,11 @@ class CustomerPortal(portal.CustomerPortal):
                 domain,
                 [
                     "|",
+                    "|",
                     "&",
                     ("parent_id", "=", parent_company_id),  # Other company employees                    
                     ("parent_id", "!=", False),  # Filter contacts without parent_id
+                    ("parent_id", "=", user.partner_id.id), # Adds child contact if logged user is Parent Company
                     ("id","=",parent_company_id,),  # Should user see company's main contact?
                 ],
             ]
