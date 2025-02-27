@@ -1,3 +1,7 @@
+1.3.0
+======
+* Added wizard portal.wizard.user to add created user as follower to his own chatter.
+
 1.2.0
 ======
 * Added child contacts to domain.
