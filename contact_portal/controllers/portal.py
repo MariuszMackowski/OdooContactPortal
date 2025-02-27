@@ -38,10 +38,13 @@ class CustomerPortal(portal.CustomerPortal):
                 - For portal users: Filters contacts by company (parent company) and excludes self.
                 - For internal users: Allows all contacts to be viewed.
         """
-        domain = [
-            ("type", "in", ["contact", "other"])
-        ]  # Does it make sens to send message to invoice/delivery address?
         user = request.env.user
+        domain = [
+            "&",
+            ("type", "in", ["contact", "other"]), # Doesn't make sens to send message to invoice/delivery address
+            ("id", "!=", user.partner_id.id), # Filter self
+        ]
+        
         if user.has_group("base.group_user"):
             return domain  # If Portal users should only see contacts from their own company, internal users can see all the contacts?
 
@@ -53,15 +56,9 @@ class CustomerPortal(portal.CustomerPortal):
                 [
                     "|",
                     "&",
-                    "&",
-                    ("parent_id", "=", parent_company_id),  # Other company employees
-                    ("id", "!=", user.partner_id.id),  # Filter self
+                    ("parent_id", "=", parent_company_id),  # Other company employees                    
                     ("parent_id", "!=", False),  # Filter contacts without parent_id
-                    (
-                        "id",
-                        "=",
-                        parent_company_id,
-                    ),  # Should user see company's main contact?
+                    ("id","=",parent_company_id,),  # Should user see company's main contact?
                 ],
             ]
         )
